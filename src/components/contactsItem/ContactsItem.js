@@ -9,7 +9,7 @@ export function ContactsItem({
   contact: { name, number, id },
   onRemoveContact,
 }) {
-  const handleClick = e => onRemoveContact(e.target.dataset.id);
+  const handleClick = e => onRemoveContact(e.currentTarget.dataset.id);
 
   return (
     <li className={styles.ListItem}>

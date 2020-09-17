@@ -9,19 +9,31 @@ import { Notification } from './notification/Notification';
 import slideNotiAppear from './notification/slide.module.css';
 import slideLogoAppear from './slideAppear.module.css';
 import popFilterStyles from './filter/pop.module.css';
+import staticElements from './staticElements.module.css';
 
 export class App extends React.Component {
   state = {
     contacts: [],
     filter: '',
     error: false,
+    isMountedfilter: false,
+    isMounted: false,
   };
 
   componentDidMount() {
-    const savedContactsInLS = localStorage.getItem('contacts');
+    const savedContactsInLS = JSON.parse(localStorage.getItem('contacts'));
     if (savedContactsInLS) {
       this.setState({
-        contacts: JSON.parse(savedContactsInLS),
+        contacts: savedContactsInLS,
+      });
+      this.setState({
+        isMounted: true,
+      });
+    }
+
+    if (savedContactsInLS.length > 1) {
+      this.setState({
+        isMountedfilter: true,
       });
     }
   }
@@ -29,6 +41,10 @@ export class App extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevState.contacts !== this.state.contacts) {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
+      this.setState({
+        isMounted: false,
+        isMountedfilter: false,
+      });
     }
   }
 
@@ -64,6 +80,8 @@ export class App extends React.Component {
   render() {
     const contacts = this.state.contacts;
     const filter = this.state.filter;
+    const isMounted = this.state.isMounted;
+    const isMountedfilter = this.state.isMountedfilter;
     const filteredContacts = contacts.filter(contact =>
       contact.name.toLowerCase().includes(filter),
     );
@@ -71,8 +89,8 @@ export class App extends React.Component {
       <>
         <Container>
           <CSSTransition
-            in={true}
-            appear={true}
+            in
+            appear
             timeout={500}
             classNames={slideLogoAppear}
             unmountOnExit
@@ -83,9 +101,10 @@ export class App extends React.Component {
           <ContactForm onAddContact={this.addContact}></ContactForm>
 
           <CSSTransition
-            in={contacts.length > 1}
+            in={isMountedfilter || contacts.length > 1}
+            appear={isMountedfilter}
             timeout={250}
-            classNames={popFilterStyles}
+            classNames={isMountedfilter ? staticElements : popFilterStyles}
             unmountOnExit
           >
             <Filter value={filter} onChangeFilter={this.onChangeFilter} />
@@ -96,6 +115,7 @@ export class App extends React.Component {
           <ContactsList
             contacts={filteredContacts}
             onRemoveContact={this.removeContact}
+            isMounted={isMounted}
           ></ContactsList>
           <CSSTransition
             in={this.state.error}
