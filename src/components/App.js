@@ -21,20 +21,20 @@ export class App extends React.Component {
   };
 
   componentDidMount() {
-    const savedContactsInLS = JSON.parse(localStorage.getItem('contacts'));
-    if (savedContactsInLS) {
+    const contactsInLS = localStorage.getItem('contacts');
+    if (contactsInLS) {
+      const savedContactsInLS = JSON.parse(contactsInLS);
       this.setState({
         contacts: savedContactsInLS,
       });
       this.setState({
         isMounted: true,
       });
-    }
-
-    if (savedContactsInLS.length > 1) {
-      this.setState({
-        isMountedfilter: true,
-      });
+      if (savedContactsInLS.length > 1) {
+        this.setState({
+          isMountedfilter: true,
+        });
+      }
     }
   }
 
